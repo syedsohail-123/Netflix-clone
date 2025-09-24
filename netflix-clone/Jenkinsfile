@@ -45,16 +45,32 @@ pipeline {
                 }
             }
         }
+
+        stage('Run Container for Preview (Optional)') {
+            steps {
+                script {
+                    // Stop & remove previous container if exists
+                    sh 'docker rm -f ${CONTAINER_NAME} || true'
+
+                    // Run container in detached mode
+                    sh 'docker run -d --name ${CONTAINER_NAME} -p 8080:80 ${IMAGE_NAME}:${IMAGE_TAG}'
+
+                    echo "Container running at http://<JENKINS_HOST>:8080"
+                }
+            }
+        }
     }
 
     post {
         always {
             echo "Cleaning up..."
+            // Stop & remove container after pipeline ends (optional)
             sh 'docker stop ${CONTAINER_NAME} || true'
             sh 'docker rm ${CONTAINER_NAME} || true'
         }
     }
 }
+
 
 
 
