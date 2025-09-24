@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "syedsohail746/netflix"
+        IMAGE_NAME = "syedsohail746/netflix"       // DockerHub repo
         IMAGE_TAG = "latest"
         CONTAINER_NAME = "netflix-clone-container"
         GIT_REPO = "https://github.com/syedsohail-123/Netflix-clone.git"
@@ -66,5 +66,6 @@ pipeline {
         }
     }
 }
+
 
 
