@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Dark mode styles */
+.dark {
+  background-color: #141414;
+  color: white;
+}
+
+/* Light mode styles */
+body:not(.dark) {
+  background-color: #f0f0f0;
+  color: #000000;
+}
+
+/* Netflix-specific dark theme colors */
+.dark .bg-netflix-black {
+  background-color: #141414;
+}
+
+/* Netflix-specific light theme colors */
+body:not(.dark) .bg-netflix-black {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Text colors for light theme */
+body:not(.dark) .text-white {
+  color: #000000 !important;
+}
+
+body:not(.dark) .text-gray-300 {
+  color: #444444 !important;
+}
+
+body:not(.dark) .text-gray-400 {
+  color: #666666 !important;
+}
+
+/* Header styles for light theme */
+body:not(.dark) header {
+  background-color: #ffffff !important;
+  color: #000000;
+}
+
+body:not(.dark) header a {
+  color: #000000 !important;
+}
+
+body:not(.dark) header a:hover {
+  color: #666666 !important;
+}
+
+/* Button styles for light theme */
+body:not(.dark) button.text-white {
+  color: #000000 !important;
+}
+
+body:not(.dark) button.text-white:hover {
+  color: #666666 !important;
+}
+
+/* Input styles for light theme */
+body:not(.dark) input {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #cccccc !important;
+}
+
+/* Link styles for light theme */
+body:not(.dark) .text-netflix-red {
+  color: #e50914;
+}
+
+body:not(.dark) .text-netflix-red:hover {
+  color: #f00000 !important;
+}
+
+/* App background colors */
+.dark .App {
+  background-color: #141414;
+}
+
+body:not(.dark) .App {
+  background-color: #ffffff;
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
