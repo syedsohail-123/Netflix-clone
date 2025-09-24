@@ -39,7 +39,6 @@ const Row: React.FC<RowProps> = ({ title, searchQuery, isLargeRow = false }) => 
 
   const textColorClass = theme === 'dark' ? 'text-white' : 'text-black';
   const textColorGrayClass = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
-  const textColorLightGrayClass = theme === 'dark' ? 'text-gray-400' : 'text-gray-500';
 
   return (
     <div className="m-4">
