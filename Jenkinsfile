@@ -12,6 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                // Checkout repo inside workspace root
                 dir('Netflix-clone') {
                     git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
                 }
@@ -22,6 +23,7 @@ pipeline {
             steps {
                 script {
                     env.VERSION_TAG = "${env.BUILD_NUMBER}"
+                    // Run docker build from workspace root
                     sh """
                         docker build -f Dockerfile \
                         --cache-from ${IMAGE_NAME}:${IMAGE_TAG} \
@@ -67,6 +69,7 @@ pipeline {
         }
     }
 }
+
 
 
 
