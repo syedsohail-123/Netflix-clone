@@ -7,6 +7,7 @@ pipeline {
         CONTAINER_NAME = "netflix-clone-container"
         GIT_REPO = "https://github.com/syedsohail-123/Netflix-clone.git"
         GIT_BRANCH = "main"
+        TRIVY_PATH = "/usr/bin/trivy"   // update this if your path is different
     }
 
     stages {
@@ -32,7 +33,7 @@ pipeline {
 
         stage('Scan Docker Image with Trivy') {
             steps {
-                sh 'trivy image --exit-code 1 --severity CRITICAL,HIGH ${IMAGE_NAME}:${IMAGE_TAG} || true'
+                sh '${TRIVY_PATH} image --exit-code 1 --severity CRITICAL,HIGH ${IMAGE_NAME}:${IMAGE_TAG} || true'
             }
         }
 
@@ -40,7 +41,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}
                     sh "docker push ${IMAGE_NAME}:${VERSION_TAG}"
                 }
             }
@@ -49,12 +50,8 @@ pipeline {
         stage('Run Container for Preview (Optional)') {
             steps {
                 script {
-                    // Stop & remove previous container if exists
                     sh 'docker rm -f ${CONTAINER_NAME} || true'
-
-                    // Run container in detached mode
                     sh 'docker run -d --name ${CONTAINER_NAME} -p 8080:80 ${IMAGE_NAME}:${IMAGE_TAG}'
-
                     echo "Container running at http://<JENKINS_HOST>:8080"
                 }
             }
@@ -64,12 +61,12 @@ pipeline {
     post {
         always {
             echo "Cleaning up..."
-            // Stop & remove container after pipeline ends (optional)
             sh 'docker stop ${CONTAINER_NAME} || true'
             sh 'docker rm ${CONTAINER_NAME} || true'
         }
     }
 }
+
 
 
 
