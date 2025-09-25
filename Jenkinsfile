@@ -7,7 +7,6 @@ pipeline {
         CONTAINER_NAME = "netflix-clone-container"
         GIT_REPO = "https://github.com/syedsohail-123/Netflix-clone.git"
         GIT_BRANCH = "main"
-        TRIVY_PATH = "/usr/bin/trivy"   // update this if your path is different
     }
 
     stages {
@@ -22,7 +21,7 @@ pipeline {
                 script {
                     env.VERSION_TAG = "${env.BUILD_NUMBER}"
                     sh """
-                        docker build \
+                        docker build -f Dockerfile \
                         --cache-from ${IMAGE_NAME}:${IMAGE_TAG} \
                         -t ${IMAGE_NAME}:${IMAGE_TAG} \
                         -t ${IMAGE_NAME}:${VERSION_TAG} .
@@ -33,7 +32,7 @@ pipeline {
 
         stage('Scan Docker Image with Trivy') {
             steps {
-                sh '${TRIVY_PATH} image --exit-code 1 --severity CRITICAL,HIGH ${IMAGE_NAME}:${IMAGE_TAG} || true'
+                sh 'trivy image --exit-code 1 --severity CRITICAL,HIGH ${IMAGE_NAME}:${IMAGE_TAG} || true'
             }
         }
 
@@ -41,7 +40,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker push ${IMAGE_NAME}:${VERSION_TAG}"
                 }
             }
@@ -66,6 +65,7 @@ pipeline {
         }
     }
 }
+
 
 
 
