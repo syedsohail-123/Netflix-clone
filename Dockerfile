@@ -1,15 +1,15 @@
-# Use Nginx to serve already built files
 FROM nginx:stable-alpine
 
-# Copy built files (inside Netflix-clone/dist)
+# Copy built files from Netflix-clone/dist
 COPY Netflix-clone/dist /usr/share/nginx/html
 
-# Copy nginx.conf (if you have it inside repo root)
+# Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose Nginx port
-EXPOSE 80
+# Expose port 86
+EXPOSE 86
 
 CMD ["nginx", "-g", "daemon off;"]
+
 
 

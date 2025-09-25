@@ -12,7 +12,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
+                // Checkout repo into Netflix-clone folder
+                dir('Netflix-clone') {
+                    git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
+                }
             }
         }
 
@@ -21,7 +24,7 @@ pipeline {
                 script {
                     env.VERSION_TAG = "${env.BUILD_NUMBER}"
                     sh """
-                        docker build -f Dockerfile \
+                        docker build \
                         --cache-from ${IMAGE_NAME}:${IMAGE_TAG} \
                         -t ${IMAGE_NAME}:${IMAGE_TAG} \
                         -t ${IMAGE_NAME}:${VERSION_TAG} .
@@ -32,7 +35,7 @@ pipeline {
 
         stage('Scan Docker Image with Trivy') {
             steps {
-                sh 'trivy image --exit-code 1 --severity CRITICAL,HIGH ${IMAGE_NAME}:${IMAGE_TAG} || true'
+                sh "trivy image --exit-code 1 --severity CRITICAL,HIGH ${IMAGE_NAME}:${IMAGE_TAG} || true"
             }
         }
 
@@ -49,8 +52,12 @@ pipeline {
         stage('Run Container for Preview (Optional)') {
             steps {
                 script {
-                    sh 'docker rm -f ${CONTAINER_NAME} || true'
-                    sh 'docker run -d --name ${CONTAINER_NAME} -p 8080:80 ${IMAGE_NAME}:${IMAGE_TAG}'
+                    // Stop & remove previous container if exists
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+
+                    // Run container in detached mode
+                    sh "docker run -d --name ${CONTAINER_NAME} -p 8080:86 ${IMAGE_NAME}:${IMAGE_TAG}"
+
                     echo "Container running at http://<JENKINS_HOST>:8080"
                 }
             }
@@ -60,11 +67,12 @@ pipeline {
     post {
         always {
             echo "Cleaning up..."
-            sh 'docker stop ${CONTAINER_NAME} || true'
-            sh 'docker rm ${CONTAINER_NAME} || true'
+            sh "docker stop ${CONTAINER_NAME} || true"
+            sh "docker rm ${CONTAINER_NAME} || true"
         }
     }
 }
+
 
 
 
